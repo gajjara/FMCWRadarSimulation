@@ -32,38 +32,33 @@ function [Tx,Rx,Mix,FMix,FMix2] = fmcw_target(target_range,max_range,range_res,t
 % 
 % See also:  none
 
-% Speed of light
-c = 3e8;
+% Time-independent parameters
+c = 3e8; % Speed of light
+B = c/(2*range_res); % Bandwidth
+Tchirp = 2*(max_range/c); % Chirp Time
+slope = B/Tchirp; % Slope for frequnecy difference
+G = 10^(G/10); % Gain linear
+lambda = (c/fc); % Wavelength
+A_e = (G*lambda^2)/(4*pi); % Effective radar aperture
 
-% Bandwidth
-B = c/(2*range_res);
-
-% Chirp Time
-Tchirp = 2*(max_range/c);
-
-% Slope for frequnecy difference
-slope = B/Tchirp;
-
-% Time axis
-t = linspace(0,Nd*Tchirp,Nr*Nd);
-
-% Time-dependent range
-r_t = target_range + (target_vel.*t);
-
-% Time delay
-td = (2*r_t)/c;
-
-% Gain linear
-G = 10^(G/10);
+% Time-dependent parameters
+t = linspace(0,Nd*Tchirp,Nr*Nd); % Time axis
+r_t = target_range + (target_vel.*t); % Time-dependent range
+td = (2*r_t)/c; % Time delay
 
 % Tx signal
 Tx = Ps.*cos(2.*pi.*(fc.*t + (slope.*t.^2)./2));
 
-% Power recieved at Rx
-Pe = Ps*(((G^2)*((c/fc)^2))/(((4*pi)^3)*(target_range^4)));
+% Radar cross section
+cross = ((4*pi)*(0.1^2)*(0.1^2))/(lambda^2);
+
+% Recieved power at Rx
+Pe = cross*A_e*Ps*G*((1/(4*pi*(target_range^2)))^2);
 
 % Rx signal
 Rx = Pe.*cos(2.*pi.*(fc.*(t -td) + (slope.*(t-td).^2)./2));
+
+
 % Set the radar cross section to a lot smaller
 % Cross section area
     % Assume antenna beam is circle
