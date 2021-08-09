@@ -50,7 +50,7 @@ td = (2*r_t)/c; % Time delay
 Tx = Ps.*cos(2.*pi.*(fc.*t + (slope.*t.^2)./2));
 
 % Radar cross section
-cross = ((4*pi)*(0.1^2)*(0.1^2))/(lambda^2);
+cross = ((4*pi)*(0.01^2)*(0.01^2))/(lambda^2);
 
 % Recieved power at Rx
 Pe = cross*A_e*Ps*G*((1/(4*pi*(target_range^2)))^2);
